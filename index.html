@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英語學習大冒險 English Learning Adventure</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #090d16 0%, #020205 100%);
+        }
+        .font-bubble {
+            font-family: 'Fredoka One', cursive, sans-serif;
+        }
+        /* 橡皮筋動畫效果 */
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-bounce-slow {
+            animation: bounce-slow 3s infinite ease-in-out;
+        }
+        /* 蛇扭動動畫 */
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg) scale(1); }
+            50% { transform: rotate(3deg) scale(1.05); }
+        }
+        .wiggle-snake {
+            animation: wiggle 0.8s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-100 selection:bg-amber-500 selection:text-white">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-slate-950/80 backdrop-blur-md shadow-lg border-b border-slate-800 sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="goToHome()">
+                <div class="bg-amber-500 p-2 rounded-full shadow-inner animate-bounce-slow">
+                    <i data-lucide="sparkles" class="w-6 h-6 text-slate-950"></i>
+                </div>
+                <span class="font-bubble text-2xl text-amber-400 tracking-wider">English Adventure</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <!-- 分數與進度 -->
+                <div class="flex items-center gap-2 bg-slate-900 px-4 py-1.5 rounded-full border border-amber-500/30">
+                    <i data-lucide="trophy" class="w-5 h-5 text-amber-400"></i>
+                    <span class="font-bold text-amber-300">得分: <span id="global-score" class="font-bubble">0</span></span>
+                </div>
+                <!-- 重新開始按鈕 -->
+                <button onclick="resetGame()" class="text-sm bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-1.5 px-3 rounded-lg transition flex items-center gap-1">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i> 重新開始
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主遊戲容器 -->
+    <main class="flex-grow max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+        
+        <!-- ================= 主畫面 / 關卡選擇 ================= -->
+        <section id="screen-lobby" class="bg-slate-900/90 rounded-3xl p-6 md:p-10 shadow-2xl border-4 border-amber-500/50 relative overflow-hidden transition-all duration-300">
+            <!-- 裝飾背景背景球 -->
+            <div class="absolute -top-12 -left-12 w-32 h-32 bg-amber-500/10 rounded-full blur-xl"></div>
+            <div class="absolute -bottom-12 -right-12 w-40 h-40 bg-emerald-500/10 rounded-full blur-xl"></div>
+
+            <div class="relative z-10 text-center max-w-2xl mx-auto">
+                <h1 class="text-3xl md:text-5xl font-bubble text-amber-400 mb-2 leading-tight">神奇英語冒險島 🌟</h1>
+                <p class="text-slate-400 font-bold mb-8">跟著活潑的提示關卡，邊玩邊擊碎所有易錯文法與拼讀盲點吧！</p>
+                
+                <!-- 關卡地圖 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Get Ready -->
+                    <button onclick="startLevel('get-ready')" class="group relative bg-amber-950/20 hover:bg-amber-950/40 border-2 border-amber-500/40 hover:border-amber-400 rounded-2xl p-5 text-left transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">
+                        <div class="absolute top-4 right-4 bg-amber-900/60 text-amber-200 text-xs font-bold px-2 py-0.5 rounded-full">基礎</div>
+                        <div class="text-3xl mb-2">🚌</div>
+                        <h3 class="font-bubble text-lg text-amber-300">Get Ready</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-bold">三位數、考試分數 & 長母音 [a]</p>
+                        <div class="mt-3 flex items-center gap-1 text-sm font-bold text-amber-400 group-hover:translate-x-1 transition-transform">
+                            出發挑戰 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+
+                    <!-- Unit 1 -->
+                    <button onclick="startLevel('unit-1')" class="group relative bg-emerald-950/20 hover:bg-emerald-950/40 border-2 border-emerald-500/40 hover:border-emerald-400 rounded-2xl p-5 text-left transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">
+                        <div class="absolute top-4 right-4 bg-emerald-900/60 text-emerald-200 text-xs font-bold px-2 py-0.5 rounded-full">Unit 1</div>
+                        <div class="text-3xl mb-2">🥤</div>
+                        <h3 class="font-bubble text-lg text-emerald-300">飲品喜好與健康</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-bold">does 助動詞 & 減糖挑戰</p>
+                        <div class="mt-3 flex items-center gap-1 text-sm font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">
+                            出發挑戰 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+
+                    <!-- Unit 2 -->
+                    <button onclick="startLevel('unit-2')" class="group relative bg-sky-950/20 hover:bg-sky-950/40 border-2 border-sky-500/40 hover:border-sky-400 rounded-2xl p-5 text-left transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">
+                        <div class="absolute top-4 right-4 bg-sky-900/60 text-sky-200 text-xs font-bold px-2 py-0.5 rounded-full">Unit 2</div>
+                        <div class="text-3xl mb-2">🍎</div>
+                        <h3 class="font-bubble text-lg text-sky-300">水果數量與需求</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-bold">「看臉色的蛇 s」與複數名詞</p>
+                        <div class="mt-3 flex items-center gap-1 text-sm font-bold text-sky-400 group-hover:translate-x-1 transition-transform">
+                            出發挑戰 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+
+                    <!-- Unit 3 -->
+                    <button onclick="startLevel('unit-3')" class="group relative bg-purple-950/20 hover:bg-purple-950/40 border-2 border-purple-500/40 hover:border-purple-400 rounded-2xl p-5 text-left transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">
+                        <div class="absolute top-4 right-4 bg-purple-900/60 text-purple-200 text-xs font-bold px-2 py-0.5 rounded-full">Unit 3</div>
+                        <div class="text-3xl mb-2">📅</div>
+                        <h3 class="font-bubble text-lg text-purple-300">一週的日期</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-bold">大寫首字母與縮寫配對</p>
+                        <div class="mt-3 flex items-center gap-1 text-sm font-bold text-purple-400 group-hover:translate-x-1 transition-transform">
+                            出發挑戰 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+
+                    <!-- Unit 4 -->
+                    <button onclick="startLevel('unit-4')" class="group relative bg-pink-950/20 hover:bg-pink-950/40 border-2 border-pink-500/40 hover:border-pink-400 rounded-2xl p-5 text-left transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">
+                        <div class="absolute top-4 right-4 bg-pink-900/60 text-pink-200 text-xs font-bold px-2 py-0.5 rounded-full">Unit 4</div>
+                        <div class="text-3xl mb-2">🧪</div>
+                        <h3 class="font-bubble text-lg text-pink-300">最喜歡的科目</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-bold">所有格大冒險 & 學科大寫</p>
+                        <div class="mt-3 flex items-center gap-1 text-sm font-bold text-pink-400 group-hover:translate-x-1 transition-transform">
+                            出發挑戰 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+
+                    <!-- Culture & Phonics -->
+                    <button onclick="startLevel('special')" class="group relative bg-red-950/20 hover:bg-red-950/40 border-2 border-red-500/40 hover:border-red-400 rounded-2xl p-5 text-left transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-1">
+                        <div class="absolute top-4 right-4 bg-red-900/60 text-red-200 text-xs font-bold px-2 py-0.5 rounded-full">新年 & 語音</div>
+                        <div class="text-3xl mb-2">🧧</div>
+                        <h3 class="font-bubble text-lg text-red-300">年節文化與拼讀</h3>
+                        <p class="text-xs text-slate-400 mt-1 font-bold">新春食物吉祥話 & 母音分類車</p>
+                        <div class="mt-3 flex items-center gap-1 text-sm font-bold text-red-400 group-hover:translate-x-1 transition-transform">
+                            出發挑戰 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="mt-10 bg-slate-950/60 rounded-2xl p-4 flex items-center justify-center gap-3 border border-slate-800 max-w-lg mx-auto">
+                    <span class="text-2xl">💡</span>
+                    <p class="text-sm text-slate-400 text-left font-semibold">每個關卡都有獨特的挑戰機制，全對可以獲得特殊勳章喔！快來累積你的最高榮譽吧！</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 關卡 0: Get Ready ================= -->
+        <section id="screen-get-ready" class="hidden bg-slate-900/95 rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-amber-500/50 relative">
+            <button onclick="goToHome()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100 font-bold flex items-center gap-1 text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回地圖
+            </button>
+            <div class="text-center mb-6 pt-4">
+                <span class="text-xs bg-amber-950/55 text-amber-300 font-bold px-3 py-1 rounded-full uppercase tracking-wider">Get Ready - 基礎暖身</span>
+                <h2 class="text-2xl font-bold text-slate-100 mt-2">數字與拼讀傳送門 🚌</h2>
+            </div>
+
+            <!-- 任務 1：三位數與比數聽讀選擇 -->
+            <div id="gr-task-1" class="space-y-6">
+                <div class="bg-amber-950/20 rounded-2xl p-4 border border-amber-500/20">
+                    <h3 class="font-bold text-amber-200 flex items-center gap-2">
+                        <span class="bg-amber-500 text-slate-950 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">1</span>
+                        情境聽說挑戰：請點擊發音，並選出正確的唸法！
+                    </h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- 左：聽力播放 -->
+                    <div class="bg-slate-950/40 rounded-xl p-6 border border-slate-800 flex flex-col justify-center items-center gap-4 text-center">
+                        <div class="text-6xl animate-pulse">📢</div>
+                        <button onclick="playTTS('gr-current-audio')" id="gr-audio-btn" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 px-6 rounded-full flex items-center gap-2 shadow-lg transition-all transform hover:scale-105">
+                            <i data-lucide="volume-2" class="w-5 h-5"></i> 點我發音
+                        </button>
+                        <p class="text-xs text-slate-500">（如果聲音太小，請確認裝置音量已開啟）</p>
+                    </div>
+
+                    <!-- 右：選項按鈕 -->
+                    <div class="flex flex-col justify-center gap-3" id="gr-options-container">
+                        <!-- 動態插入選項 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 任務 2：Phonics 拼讀傳送門 -->
+            <div id="gr-task-2" class="hidden space-y-6">
+                <div class="bg-amber-950/20 rounded-2xl p-4 border border-amber-500/20">
+                    <h3 class="font-bold text-amber-200 flex items-center gap-2">
+                        <span class="bg-amber-500 text-slate-950 rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">2</span>
+                        長母音 [a] 傳送門：請將正確的字母組合拖入或點擊填入空中！
+                    </h3>
+                    <p class="text-xs text-amber-300 mt-1 font-semibold">💡 提示：gate, pail, day 都發長母音 [a] 的音喔！</p>
+                </div>
+
+                <div class="flex flex-col items-center justify-center py-6 gap-6">
+                    <div class="text-center">
+                        <div class="text-5xl mb-4" id="gr-phonics-emoji">🚪</div>
+                        <p class="text-2xl font-bold tracking-widest text-slate-200 font-bubble" id="gr-phonics-word">g _ _ e</p>
+                        <p class="text-sm text-slate-400 mt-1" id="gr-phonics-hint">提示：大門</p>
+                    </div>
+
+                    <div class="flex gap-4" id="gr-phonics-letters">
+                        <!-- 動態生成字母方塊 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部進度指示器 -->
+            <div class="mt-8 pt-4 border-t border-slate-800 flex justify-between items-center">
+                <div class="text-sm text-slate-400 font-semibold" id="gr-step-indicator">任務 1 / 2</div>
+                <div class="w-1/3 bg-slate-950 h-2 rounded-full overflow-hidden">
+                    <div id="gr-progress-bar" class="bg-amber-500 h-full transition-all duration-300" style="width: 50%"></div>
+                </div>
+                <button onclick="nextGetReadyTask()" id="gr-next-btn" class="hidden bg-slate-800 text-white font-bold py-2 px-4 rounded-xl flex items-center gap-1 transition-all hover:bg-slate-700">
+                    下一步 <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= 關卡 1: Unit 1 飲品與健康 ================= -->
+        <section id="screen-unit-1" class="hidden bg-slate-900/95 rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-emerald-500/50 relative">
+            <button onclick="goToHome()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100 font-bold flex items-center gap-1 text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回地圖
+            </button>
+            <div class="text-center mb-6 pt-4">
+                <span class="text-xs bg-emerald-950/50 text-emerald-300 font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 1 - 飲品喜好與健康</span>
+                <h2 class="text-2xl font-bold text-slate-100 mt-2">健康手搖飲調製挑戰 🥤</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- 左側：調配看板與顧客 -->
+                <div class="lg:col-span-5 bg-slate-950/40 rounded-2xl p-5 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-2xl">🧑‍</span>
+                            <span class="text-sm font-bold text-slate-300">顧客：小美 (Emily)</span>
+                        </div>
+                        <div class="bg-slate-900 rounded-xl p-4 border border-emerald-500/20 shadow-sm">
+                            <p class="text-xs text-slate-400 font-bold">我想喝：</p>
+                            <p class="font-bold text-slate-200 text-base mt-1" id="u1-order-bubble">"Does she like cola? No, she doesn't. She wants sugar-free green tea!"</p>
+                        </div>
+                    </div>
+
+                    <!-- 飲料杯動態視覺 -->
+                    <div class="my-6 flex justify-center">
+                        <div class="relative w-28 h-36 bg-slate-950/60 rounded-b-3xl border-4 border-slate-700 flex flex-col justify-end overflow-hidden shadow-inner">
+                            <!-- 飲料液體 -->
+                            <div id="u1-liquid" class="w-full h-0 bg-amber-950 transition-all duration-700 relative">
+                                <!-- 珍珠 -->
+                                <div id="u1-bubbles" class="absolute inset-0 hidden">
+                                    <div class="absolute bottom-2 left-4 w-4 h-4 bg-slate-950 rounded-full"></div>
+                                    <div class="absolute bottom-3 left-10 w-4 h-4 bg-slate-950 rounded-full"></div>
+                                    <div class="absolute bottom-1 left-16 w-4 h-4 bg-slate-950 rounded-full"></div>
+                                    <div class="absolute bottom-6 left-6 w-4 h-4 bg-slate-950 rounded-full"></div>
+                                    <div class="absolute bottom-5 left-12 w-4 h-4 bg-slate-950 rounded-full"></div>
+                                    <div class="absolute bottom-7 left-18 w-4 h-4 bg-slate-950 rounded-full"></div>
+                                </div>
+                            </div>
+                            <!-- 吸管 -->
+                            <div class="absolute -top-6 right-6 w-4 h-24 bg-red-500/80 rounded-full transform rotate-12"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="text-xs bg-slate-800 text-slate-300 font-bold py-1 px-3 rounded-full" id="u1-cup-status">目前：空空如也</span>
+                    </div>
+                </div>
+
+                <!-- 右側：調配配方/助動詞與含糖量選擇 -->
+                <div class="lg:col-span-7 space-y-4">
+                    <!-- 題目引導 -->
+                    <div class="bg-emerald-950/20 rounded-2xl p-4 border border-emerald-500/20">
+                        <p class="text-sm text-emerald-300 font-bold" id="u1-question-title">問題：請填入適當的助動詞與飲料配方！</p>
+                    </div>
+
+                    <!-- 助動詞填空 -->
+                    <div class="bg-slate-950/30 rounded-2xl p-5 border border-slate-850 shadow-sm space-y-4">
+                        <p class="font-bold text-slate-300 text-sm">步驟 1：完成顧客詢問句型</p>
+                        <div class="flex flex-wrap items-center gap-2 py-2">
+                            <span class="font-bold text-slate-400">_____</span>
+                            <span class="font-bubble text-amber-400 text-lg" id="u1-sentence-subject">he</span>
+                            <span class="font-bold text-slate-400">like</span>
+                            <span class="font-bubble text-amber-400 text-lg" id="u1-sentence-drink">coffee</span>
+                            <span class="font-bold text-slate-400">?</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="selectU1Aux('Do')" class="u1-aux-btn py-2.5 px-4 rounded-xl border-2 border-slate-700 hover:border-emerald-500 hover:bg-slate-800 text-slate-300 font-bold transition-all text-center">Do</button>
+                            <button onclick="selectU1Aux('Does')" class="u1-aux-btn py-2.5 px-4 rounded-xl border-2 border-slate-700 hover:border-emerald-500 hover:bg-slate-800 text-slate-300 font-bold transition-all text-center">Does</button>
+                        </div>
+                    </div>
+
+                    <!-- 選擇配方（飲品與健康含糖量） -->
+                    <div class="bg-slate-950/30 rounded-2xl p-5 border border-slate-850 shadow-sm space-y-4">
+                        <p class="font-bold text-slate-300 text-sm">步驟 2：選擇正確的飲料種類（注意含糖量 🍬）</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="u1-drink-options">
+                            <!-- 動態生成飲料配方按鈕 -->
+                        </div>
+                    </div>
+
+                    <!-- 驗證按鈕 -->
+                    <button onclick="verifyU1Recipe()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg transition-all transform active:scale-95">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i> 點我搖一搖送餐！
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 關卡 2: Unit 2 水果數量與需求 ================= -->
+        <section id="screen-unit-2" class="hidden bg-slate-900/95 rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-sky-500/50 relative">
+            <button onclick="goToHome()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100 font-bold flex items-center gap-1 text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回地圖
+            </button>
+            <div class="text-center mb-6 pt-4">
+                <span class="text-xs bg-sky-950/50 text-sky-300 font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 2 - 水果數量與需求</span>
+                <h2 class="text-2xl font-bold text-slate-100 mt-2">看臉色的蛇 S 🐍</h2>
+            </div>
+
+            <div class="bg-sky-950/20 rounded-2xl p-4 border border-sky-500/20 mb-6 text-center">
+                <p class="font-bold text-sky-300">💡 魔法提醒：「s 是一條會看人臉色的蛇！」🐍</p>
+                <p class="text-xs text-sky-400 mt-1">當主詞是「第三人稱單數」(he, she, it) 等單數強者時，蛇蛇就會高興地黏在動詞字尾喔！</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+                <!-- 左：題目看板與拖曳區 -->
+                <div class="bg-slate-950/40 rounded-2xl p-6 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-xs bg-slate-800 text-slate-300 font-bold py-1 px-3 rounded-full">水果攤需求卡</span>
+                            <span class="text-2xl" id="u2-fruit-emoji">🍎</span>
+                        </div>
+                        <p class="text-lg font-bold text-slate-100 mb-2" id="u2-question-text">How many guavas does she need?</p>
+                        <p class="text-sm text-slate-400 font-bold">答句填空：</p>
+                    </div>
+
+                    <!-- 句型空格區（互動核心） -->
+                    <div class="bg-slate-900 rounded-2xl p-6 border-2 border-dashed border-sky-500/30 my-4 text-center">
+                        <div class="flex flex-wrap justify-center items-center gap-3 text-lg font-bold">
+                            <span id="u2-subject" class="text-sky-300 font-bubble">She</span>
+                            <span class="relative inline-block bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg text-slate-200">
+                                need<span id="u2-s-slot" class="text-red-400 font-bubble font-extrabold ml-1 w-4 inline-block text-center border-b-2 border-red-500">_</span>
+                            </span>
+                            <span id="u2-number" class="text-slate-200">five</span>
+                            <span id="u2-fruit-plural" class="text-emerald-400">guavas.</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center text-xs text-slate-500 font-semibold">
+                        請點擊下方「看人臉色的 s 蛇」或「空無一物 🫙」來完成填空！
+                    </div>
+                </div>
+
+                <!-- 右：蛇蛇操作面板 -->
+                <div class="flex flex-col justify-center gap-4">
+                    <!-- 蛇蛇 1 -->
+                    <button onclick="selectU2Suffix('s')" class="group relative bg-red-950/20 hover:bg-red-950/40 border-2 border-red-500/40 rounded-2xl p-5 text-left transition-all hover:-translate-y-1 active:scale-95 flex items-center gap-4">
+                        <div class="text-4xl wiggle-snake">🐍</div>
+                        <div>
+                            <h4 class="font-bubble text-red-400 text-lg">s 蛇蛇來了！</h4>
+                            <p class="text-xs text-slate-400 mt-1 font-bold">當主詞是單數 (He, She, It, Mom) 時使用。</p>
+                        </div>
+                    </button>
+
+                    <!-- 空盒子 -->
+                    <button onclick="selectU2Suffix('')" class="group relative bg-slate-950/20 hover:bg-slate-950/40 border-2 border-slate-750 rounded-2xl p-5 text-left transition-all hover:-translate-y-1 active:scale-95 flex items-center gap-4">
+                        <div class="text-4xl">🫙</div>
+                        <div>
+                            <h4 class="font-bubble text-slate-300 text-lg">保持原樣 (不需要 s)</h4>
+                            <p class="text-xs text-slate-400 mt-1 font-bold">當主詞是複數 (They, We, You) 或第一人稱 (I) 時選我。</p>
+                        </div>
+                    </button>
+
+                    <!-- 單複數表示整體規則 -->
+                    <div class="bg-amber-950/20 rounded-2xl p-4 border border-amber-500/20">
+                        <p class="text-xs text-amber-300 font-bold flex items-center gap-1">
+                            <span>💡 小常識：</span>
+                            <span>表達喜歡某種水果（like）時，複數名詞 (apples) 才是代表整體喔！</span>
+                        </p>
+                    </div>
+
+                    <button onclick="verifyU2()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg transition-all">
+                        確認我的蛇蛇正確性！
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 關卡 3: Unit 3 一週的日期 ================= -->
+        <section id="screen-unit-3" class="hidden bg-slate-900/95 rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-purple-500/50 relative">
+            <button onclick="goToHome()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100 font-bold flex items-center gap-1 text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回地圖
+            </button>
+            <div class="text-center mb-6 pt-4">
+                <span class="text-xs bg-purple-950/50 text-purple-300 font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 3 - 一週的日期</span>
+                <h2 class="text-2xl font-bold text-slate-100 mt-2">月曆對對碰挑戰 📅</h2>
+            </div>
+
+            <div class="bg-purple-950/20 rounded-2xl p-4 border border-purple-500/20 mb-6 text-center">
+                <p class="font-bold text-purple-300">⚠️ 最容易忽略的大危機：星期的首字母必須「大寫」！</p>
+                <p class="text-xs text-purple-400 mt-1">讓我們把月曆縮寫（如 SUN, THU）與完全正確的星期的英文配對起來吧！</p>
+            </div>
+
+            <!-- 對對碰互動區 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 左邊：縮寫方塊 (只顯示縮寫) -->
+                <div>
+                    <h3 class="font-bold text-slate-300 mb-3 text-center">📅 縮寫看板</h3>
+                    <div class="grid grid-cols-2 gap-3" id="u3-abbr-container">
+                        <!-- 動態插入縮寫按鈕 -->
+                    </div>
+                </div>
+
+                <!-- 右邊：完整單字 (包含首字大寫檢查) -->
+                <div>
+                    <h3 class="font-bold text-slate-300 mb-3 text-center">💡 點選正確的配對單字</h3>
+                    <div class="grid grid-cols-1 gap-3" id="u3-full-container">
+                        <!-- 動態插入選項，夾雜一些故意小寫的混淆字，例如 sunday -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <p class="text-sm font-bold text-purple-300" id="u3-score-info">目前配對：0 / 3</p>
+            </div>
+        </section>
+
+        <!-- ================= 關卡 4: Unit 4 最喜歡的科目 ================= -->
+        <section id="screen-unit-4" class="hidden bg-slate-900/95 rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-pink-500/50 relative">
+            <button onclick="goToHome()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100 font-bold flex items-center gap-1 text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回地圖
+            </button>
+            <div class="text-center mb-6 pt-4">
+                <span class="text-xs bg-pink-950/50 text-pink-300 font-bold px-3 py-1 rounded-full uppercase tracking-wider">Unit 4 - 最喜歡的科目</span>
+                <h2 class="text-2xl font-bold text-slate-100 mt-2">學科大寫與所有格拼圖 🧪</h2>
+            </div>
+
+            <div class="bg-pink-950/20 rounded-2xl p-4 border border-pink-500/20 mb-6">
+                <p class="font-bold text-pink-300 text-center">⚠️ 兩大盲點特訓：</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-pink-400 mt-2 font-semibold">
+                    <p class="flex items-center gap-1">📍 區分「人稱代名詞 (I, He)」與「所有格 (My, His)」！</p>
+                    <p class="flex items-center gap-1">📍 專有名詞科目 (Chinese, English) 與縮寫 (PE) 首字大寫！</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+                <!-- 左：錯字拼圖句 -->
+                <div class="bg-slate-950/40 rounded-2xl p-6 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs bg-red-950 text-red-300 font-bold px-2.5 py-1 rounded-full border border-red-500/30">這裡有錯誤喔！</span>
+                        <div class="my-6 space-y-4">
+                            <!-- 錯誤範例 -->
+                            <div class="bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-800">
+                                <p class="text-xs text-slate-500 font-bold">題目情境：</p>
+                                <p class="font-bold text-slate-300 mt-1" id="u4-context-hint">「我想說：我最喜歡的科目是體育。」</p>
+                            </div>
+                            <!-- 錯誤字串 -->
+                            <div class="bg-red-950/20 p-4 rounded-xl border border-red-500/30 flex justify-center items-center gap-2 flex-wrap">
+                                <span class="text-slate-400 text-sm font-semibold">句子：</span>
+                                <span class="font-bubble text-lg text-red-400 line-through" id="u4-wrong-sentence">I favorite subject is pe.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 正確重組填空 -->
+                    <div class="bg-slate-900 rounded-xl p-4 border border-emerald-500/30 shadow-sm">
+                        <p class="text-xs text-emerald-300 font-bold">點選下方單字，拼出「正確的句子」：</p>
+                        <div class="flex flex-wrap gap-2 mt-3 min-h-[45px] border-b border-dashed border-emerald-500/30 pb-2" id="u4-slots-container">
+                            <!-- 點選後的單字會出現在這裡 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右：可選單字庫 -->
+                <div class="flex flex-col justify-between">
+                    <div>
+                        <p class="font-bold text-slate-400 text-sm mb-3">🛠️ 單字工具箱（點擊填入，若選錯點擊上方退回）：</p>
+                        <div class="flex flex-wrap gap-2.5" id="u4-wordbank">
+                            <!-- 動態生成混淆字與正確字 -->
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mt-6">
+                        <button onclick="clearU4Slots()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 rounded-xl text-sm transition">
+                            清除重拼
+                        </button>
+                        <button onclick="verifyU4Sentence()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg transition transform active:scale-95">
+                            <i data-lucide="check" class="w-5 h-5"></i> 檢查我的正確拼圖
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 關卡 5: 新年文化與 Phonics 語音總複習 ================= -->
+        <section id="screen-special" class="hidden bg-slate-900/95 rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-red-500/50 relative">
+            <button onclick="goToHome()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100 font-bold flex items-center gap-1 text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> 返回地圖
+            </button>
+            <div class="text-center mb-6 pt-4">
+                <span class="text-xs bg-red-950/50 text-red-300 font-bold px-3 py-1 rounded-full uppercase tracking-wider">文化與節慶 & Phonics 總複習</span>
+                <h2 class="text-2xl font-bold text-slate-100 mt-2">新春祈福與拼讀小火車 🧧</h2>
+            </div>
+
+            <!-- 分頁標籤 -->
+            <div class="flex border-b border-slate-800 mb-6">
+                <button onclick="switchSpecialTab('culture')" id="tab-btn-culture" class="flex-1 py-2.5 font-bold text-center border-b-2 border-red-500 text-red-400">
+                    🧧 農曆新年吉祥對對碰
+                </button>
+                <button onclick="switchSpecialTab('phonics')" id="tab-btn-phonics" class="flex-1 py-2.5 font-bold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200">
+                    🚂 Phonics 字母小火車
+                </button>
+            </div>
+
+            <!-- 頁面 1：農曆新年吉祥翻牌配對 -->
+            <div id="tab-content-culture" class="space-y-4">
+                <div class="bg-red-950/20 p-4 rounded-xl border border-red-500/20 text-center">
+                    <p class="font-bold text-red-300 text-sm">春節大吉！請幫春聯、紅包與年節佳餚，配對它們的英文與吉祥寓意吧！</p>
+                </div>
+                <!-- 翻牌矩陣 -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 py-4" id="culture-cards-grid">
+                    <!-- 動態生成翻牌卡片 -->
+                </div>
+            </div>
+
+            <!-- 頁面 2：Phonics 字母小火車（分類遊戲） -->
+            <div id="tab-content-phonics" class="hidden space-y-6">
+                <div class="bg-orange-950/20 p-4 rounded-xl border border-orange-500/20 text-center">
+                    <p class="font-bold text-orange-300 text-sm">小火車進站！請將單字放入相對應的「長母音車廂」中吧！</p>
+                </div>
+
+                <!-- 待分類單字 -->
+                <div class="flex flex-wrap justify-center gap-3 p-4 bg-slate-950/30 rounded-2xl border border-slate-800" id="phonics-words-pool">
+                    <!-- 動態生成需要分類的單字 -->
+                </div>
+
+                <!-- 車廂（目標區） -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="phonics-carriages">
+                    <!-- 5 節車廂 -->
+                    <div class="border-2 border-dashed border-amber-500/30 rounded-2xl p-4 bg-amber-950/10 flex flex-col justify-between" onclick="dropToCarriage('a')">
+                        <div class="flex justify-between items-center pb-2 border-b border-amber-500/20 mb-2">
+                            <span class="font-bubble text-amber-300">[a] 車廂 (gate, day)</span>
+                            <span class="text-xs bg-amber-900/60 text-amber-200 px-2 py-0.5 rounded-full font-bold">a_e, ay, ai</span>
+                        </div>
+                        <div class="min-h-[60px] flex flex-wrap gap-2" id="carriage-a"></div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-emerald-500/30 rounded-2xl p-4 bg-emerald-950/10 flex flex-col justify-between" onclick="dropToCarriage('e')">
+                        <div class="flex justify-between items-center pb-2 border-b border-emerald-500/20 mb-2">
+                            <span class="font-bubble text-emerald-300">[e] 車廂 (tea, coffee)</span>
+                            <span class="text-xs bg-emerald-900/60 text-emerald-200 px-2 py-0.5 rounded-full font-bold">ee, ea</span>
+                        </div>
+                        <div class="min-h-[60px] flex flex-wrap gap-2" id="carriage-e"></div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-sky-500/30 rounded-2xl p-4 bg-sky-950/10 flex flex-col justify-between" onclick="dropToCarriage('i')">
+                        <div class="flex justify-between items-center pb-2 border-b border-sky-500/20 mb-2">
+                            <span class="font-bubble text-sky-300">[i] 車廂 (pie, night)</span>
+                            <span class="text-xs bg-sky-900/60 text-sky-200 px-2 py-0.5 rounded-full font-bold">igh, ie</span>
+                        </div>
+                        <div class="min-h-[60px] flex flex-wrap gap-2" id="carriage-i"></div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-purple-500/30 rounded-2xl p-4 bg-purple-950/10 flex flex-col justify-between" onclick="dropToCarriage('o')">
+                        <div class="flex justify-between items-center pb-2 border-b border-purple-500/20 mb-2">
+                            <span class="font-bubble text-purple-300">[o] 車廂 (boat, row)</span>
+                            <span class="text-xs bg-purple-900/60 text-purple-200 px-2 py-0.5 rounded-full font-bold">oa, ow</span>
+                        </div>
+                        <div class="min-h-[60px] flex flex-wrap gap-2" id="carriage-o"></div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-pink-500/30 rounded-2xl p-4 bg-pink-950/10 flex flex-col justify-between col-span-1 sm:col-span-2 lg:col-span-1" onclick="dropToCarriage('u')">
+                        <div class="flex justify-between items-center pb-2 border-b border-pink-500/20 mb-2">
+                            <span class="font-bubble text-pink-300">[u] 車廂 (cute, blue)</span>
+                            <span class="text-xs bg-pink-900/60 text-pink-200 px-2 py-0.5 rounded-full font-bold">u_e, ue, ui</span>
+                        </div>
+                        <div class="min-h-[60px] flex flex-wrap gap-2" id="carriage-u"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button onclick="resetPhonicsTrain()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 px-5 rounded-xl text-sm transition">
+                        重設火車
+                    </button>
+                    <button onclick="verifyPhonicsTrain()" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm transition shadow-md">
+                        驗證火車貨物
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= 互動反饋彈窗 / Modal ================= -->
+        <div id="modal-feedback" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-slate-900 rounded-3xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl border-4 border-yellow-400 transform scale-95 transition-transform duration-300" id="feedback-content">
+                <div class="text-6xl mb-4" id="modal-emoji">🎉</div>
+                <h3 class="text-2xl font-bold text-slate-100 mb-2" id="modal-title">太棒了！</h3>
+                <p class="text-slate-400 font-bold mb-6" id="modal-desc">你的答案完全正確，獲得 10 分！</p>
+                <button onclick="closeModal()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-2xl transition shadow-lg" id="modal-btn">
+                    繼續冒險
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 底部頁尾 -->
+    <footer class="bg-slate-950/20 py-4 border-t border-slate-950 mt-8 text-center text-xs text-slate-500 font-bold">
+        <span>英語學習大冒險 &copy; 2026 - 用創意戰勝易錯盲點！</span>
+    </footer>
+
+    <!-- JavaScript 邏輯 -->
+    <script>
+        // 初始化 Lucide 圖標
+        lucide.createIcons();
+
+        // 聲音合成器
+        const synth = window.speechSynthesis;
+        function playSpeech(text) {
+            if (!synth) return;
+            // 先停止其他發音
+            synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.85; // 稍慢的速度適合國小學生
+            synth.speak(utterance);
+        }
+
+        // 網頁音效合成器 (Web Audio API) - 無須外部資源
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                // 叮咚～輕快雙音
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15); // E5
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'wrong') {
+                // 咚～低沉音
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            }
+        }
+
+        // 全域遊戲狀態
+        let state = {
+            score: 0,
+            currentLevel: 'lobby',
+            getReady: {
+                step: 1, // 1: 聽說, 2: 拼讀
+                task1Answer: null,
+                task1Selected: null,
+                phonicsWord: null,
+                phonicsAnswer: null
+            },
+            unit1: {
+                subject: 'she', // 'he' / 'she'
+                drink: 'lemonade', // 'cola' / 'coffee' 等
+                selectedAux: null,
+                selectedRecipe: null,
+                targetAux: 'Does',
+                targetRecipeIdx: null,
+                recipes: []
+            },
+            unit2: {
+                subject: 'she',
+                verb: 'need',
+                fruit: 'pineapples',
+                count: 'three',
+                correctSuffix: 's', // 第三單數需要加 s
+                selectedSuffix: null
+            },
+            unit3: {
+                matches: [
+                    { abbr: 'SUN', full: 'Sunday' },
+                    { abbr: 'MON', full: 'Monday' },
+                    { abbr: 'FRI', full: 'Friday' }
+                ],
+                selectedAbbr: null,
+                pairedCount: 0
+            },
+            unit4: {
+                correctWords: ['My', 'favorite', 'subject', 'is', 'PE.'],
+                wordsPool: ['My', 'I', 'favorite', 'subject', 'is', 'pe', 'PE.', 'PE', 'me'],
+                slots: []
+            },
+            special: {
+                tab: 'culture',
+                culturePairs: [
+                    { key: 'spring couplets', val: '寫春聯 ✍️', matched: false },
+                    { key: 'lucky money', val: '領紅包 🧧', matched: false },
+                    { key: 'rice cake', val: '吃年糕 🌾', matched: false },
+                    { key: 'fish', val: '年年有餘 🐟', matched: false }
+                ],
+                selectedCardIdx: null,
+                phonicsPool: [
+                    { word: 'gate', type: 'a' },
+                    { word: 'day', type: 'a' },
+                    { word: 'tea', type: 'e' },
+                    { word: 'coffee', type: 'e' },
+                    { word: 'pie', type: 'i' },
+                    { word: 'boat', type: 'o' },
+                    { word: 'cute', type: 'u' }
+                ],
+                activePhonicsWordIdx: null
+            }
+        };
+
+        // UI 切換
+        function hideAllScreens() {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+        }
+
+        function goToHome() {
+            hideAllScreens();
+            document.getElementById('screen-lobby').classList.remove('hidden');
+            state.currentLevel = 'lobby';
+        }
+
+        function updateScore(points) {
+            state.score += points;
+            document.getElementById('global-score').innerText = state.score;
+        }
+
+        // 彈出視窗
+        function showFeedbackModal(title, desc, emoji, isSuccess, callback) {
+            playSound(isSuccess ? 'correct' : 'wrong');
+            document.getElementById('modal-emoji').innerText = emoji;
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            
+            const btn = document.getElementById('modal-btn');
+            btn.onclick = () => {
+                closeModal();
+                if (callback) callback();
+            };
+
+            document.getElementById('modal-feedback').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-feedback').classList.add('hidden');
+        }
+
+        // 啟動關卡
+        function startLevel(levelId) {
+            hideAllScreens();
+            document.getElementById(`screen-${levelId}`).classList.remove('hidden');
+            state.currentLevel = levelId;
+
+            if (levelId === 'get-ready') {
+                initGetReady();
+            } else if (levelId === 'unit-1') {
+                initUnit1();
+            } else if (levelId === 'unit-2') {
+                initUnit2();
+            } else if (levelId === 'unit-3') {
+                initUnit3();
+            } else if (levelId === 'unit-4') {
+                initUnit4();
+            } else if (levelId === 'special') {
+                initSpecial();
+            }
+        }
+
+        // 重置全體
+        function resetGame() {
+            state.score = 0;
+            document.getElementById('global-score').innerText = '0';
+            goToHome();
+        }
+
+        // ==========================================
+        // 關卡 0: Get Ready 邏輯
+        // ==========================================
+        const getReadyQuestions = [
+            { text: "Bus 101", audioText: "Bus one oh one", options: ["Bus one zero one", "Bus one oh one (正確)", "Bus one hundred one"], correctIdx: 1 },
+            { text: "94 on my test", audioText: "ninety-four on my test", options: ["ninety-four on my test (正確)", "ninety-four of my test", "ninety-four to my test"], correctIdx: 0 },
+            { text: "27 to 36", audioText: "twenty-seven to thirty-six", options: ["27 and 36", "27 against 36", "27 to 36 (正確)"], correctIdx: 2 }
+        ];
+
+        const getReadyPhonics = [
+            { word: "gate", placeholder: "g _ _ e", hint: "大門", letters: ["a_e", "ay", "ai"], correct: "a_e" },
+            { word: "pail", placeholder: "p _ _ l", hint: "水桶", letters: ["a_e", "ay", "ai"], correct: "ai" },
+            { word: "day", placeholder: "d _ _", hint: "日子/白天", letters: ["a_e", "ay", "ai"], correct: "ay" }
+        ];
+
+        let grQIdx = 0;
+        let grPIdx = 0;
+
+        function initGetReady() {
+            state.getReady.step = 1;
+            grQIdx = 0;
+            grPIdx = 0;
+            document.getElementById('gr-task-1').classList.remove('hidden');
+            document.getElementById('gr-task-2').classList.add('hidden');
+            document.getElementById('gr-next-btn').classList.add('hidden');
+            document.getElementById('gr-step-indicator').innerText = "任務 1 / 2";
+            document.getElementById('gr-progress-bar').style.width = "50%";
+            loadGetReadyTask1();
+        }
+
+        function loadGetReadyTask1() {
+            const q = getReadyQuestions[grQIdx];
+            // 設定播放文字
+            window.currentGRText = q.audioText;
+            
+            // 渲染選項
+            const container = document.getElementById('gr-options-container');
+            container.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "gr-opt-btn bg-slate-950 hover:bg-slate-800 text-left text-slate-200 font-bold py-3 px-5 rounded-2xl border-2 border-slate-800 hover:border-amber-400/60 transition-all active:scale-98 shadow-sm flex justify-between items-center";
+                btn.innerHTML = `<span>${opt}</span><i data-lucide="circle" class="w-5 h-5 text-slate-600"></i>`;
+                btn.onclick = () => selectGetReadyTask1(idx, btn);
+                container.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function playTTS(id) {
+            if (state.currentLevel === 'get-ready') {
+                playSpeech(window.currentGRText);
+            }
+        }
+
+        function selectGetReadyTask1(idx, btnElement) {
+            const q = getReadyQuestions[grQIdx];
+            document.querySelectorAll('.gr-opt-btn').forEach(btn => {
+                btn.classList.remove('border-amber-500', 'bg-slate-800');
+                btn.querySelector('i').setAttribute('data-lucide', 'circle');
+            });
+
+            btnElement.classList.add('border-amber-500', 'bg-slate-850');
+            btnElement.querySelector('i').setAttribute('data-lucide', 'check-circle-2');
+            lucide.createIcons();
+
+            if (idx === q.correctIdx) {
+                updateScore(10);
+                showFeedbackModal("答對了！", `答得好！在英語中：\n- 三位數中的 0 常用 "oh" 來唸。\n- 考試成績介系詞是用 "on"。\n- 運動比數則是使用 "to"！`, "🎉", true, () => {
+                    grQIdx++;
+                    if (grQIdx < getReadyQuestions.length) {
+                        loadGetReadyTask1();
+                    } else {
+                        // 進入任務 2
+                        state.getReady.step = 2;
+                        document.getElementById('gr-task-1').classList.add('hidden');
+                        document.getElementById('gr-task-2').classList.remove('hidden');
+                        document.getElementById('gr-step-indicator').innerText = "任務 2 / 2";
+                        document.getElementById('gr-progress-bar').style.width = "100%";
+                        loadGetReadyTask2();
+                    }
+                });
+            } else {
+                showFeedbackModal("差一點點！", "再聽聽看，注意細節的發音喔！", "🧐", false);
+            }
+        }
+
+        function loadGetReadyTask2() {
+            const p = getReadyPhonics[grPIdx];
+            document.getElementById('gr-phonics-word').innerText = p.placeholder;
+            document.getElementById('gr-phonics-hint').innerText = "提示：" + p.hint;
+
+            const lettersContainer = document.getElementById('gr-phonics-letters');
+            lettersContainer.innerHTML = '';
+            p.letters.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.className = "bg-amber-950/40 hover:bg-amber-900/60 border-2 border-amber-500/40 font-bubble text-xl text-amber-300 px-5 py-3 rounded-2xl shadow-md transition-all active:scale-90";
+                btn.innerText = letter;
+                btn.onclick = () => selectGetReadyPhonics(letter);
+                lettersContainer.appendChild(btn);
+            });
+        }
+
+        function selectGetReadyPhonics(letter) {
+            const p = getReadyPhonics[grPIdx];
+            if (letter === p.correct) {
+                updateScore(15);
+                playSpeech(p.word);
+                showFeedbackModal("拼讀正確！", `太厲害了！這個字是 "${p.word}"，發長母音 [a]！`, "🌟", true, () => {
+                    grPIdx++;
+                    if (grPIdx < getReadyPhonics.length) {
+                        loadGetReadyTask2();
+                    } else {
+                        showFeedbackModal("Get Ready 通關成功！", "你已經暖身完畢，接下來進入手搖飲店挑戰吧！", "🏆", true, () => {
+                            goToHome();
+                        });
+                    }
+                });
+            } else {
+                showFeedbackModal("不對喔！", `想想看，什麼才是拼寫 "${p.word}" 的正確規則呢？`, "😢", false);
+            }
+        }
+
+        // ==========================================
+        // 關卡 1: Unit 1 飲品與健康
+        // ==========================================
+        const u1DrinkConfigs = [
+            { name: "Sugar-free green tea (無糖綠茶)", sugar: "無糖 (0g)", level: "healthy", isHealthy: true, emoji: "🍵" },
+            { name: "Lemonade (檸檬汁 - 半糖)", sugar: "半糖 (15g)", level: "moderate", isHealthy: true, emoji: "🍋" },
+            { name: "Coffee with sugar (含糖咖啡)", sugar: "全糖 (30g)", level: "unhealthy", isHealthy: false, emoji: "☕" },
+            { name: "Cola with extra sugar (高糖可樂)", sugar: "多糖 (45g)", level: "dangerous", isHealthy: false, emoji: "🥤" }
+        ];
+
+        function initUnit1() {
+            state.unit1.selectedAux = null;
+            state.unit1.selectedRecipe = null;
+            
+            // 隨機選定題目人稱 (he / she)
+            state.unit1.subject = Math.random() > 0.5 ? 'he' : 'she';
+            state.unit1.drink = Math.random() > 0.5 ? 'cola' : 'coffee';
+            
+            // 更新看板與句子
+            document.getElementById('u1-sentence-subject').innerText = state.unit1.subject;
+            document.getElementById('u1-sentence-drink').innerText = state.unit1.drink;
+            
+            // 顧客泡泡文案：包含第三人稱單數否定回答，並提出想要低糖無糖的需求
+            const isShe = state.unit1.subject === 'she';
+            const subCapital = state.unit1.subject.charAt(0).toUpperCase() + state.unit1.subject.slice(1);
+            const pronObj = isShe ? 'She' : 'He';
+            document.getElementById('u1-order-bubble').innerText = `Does ${state.unit1.subject} like ${state.unit1.drink}? No, ${state.unit1.subject} doesn't. ${pronObj} wants sugar-free green tea! (要選擇健康飲料喔！)`;
+
+            // 狀態歸零
+            document.getElementById('u1-liquid').style.height = "0";
+            document.getElementById('u1-bubbles').classList.add('hidden');
+            document.getElementById('u1-cup-status').innerText = "目前：空空如也";
+
+            // 重置助動詞按鈕樣式
+            document.querySelectorAll('.u1-aux-btn').forEach(btn => {
+                btn.className = "u1-aux-btn py-2.5 px-4 rounded-xl border-2 border-slate-700 hover:border-emerald-500 hover:bg-slate-850 text-slate-300 font-bold transition-all text-center";
+            });
+
+            // 渲染飲料配方按鈕
+            const optionsContainer = document.getElementById('u1-drink-options');
+            optionsContainer.innerHTML = '';
+            u1DrinkConfigs.forEach((drink, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "u1-drink-btn p-3 bg-slate-950/40 rounded-xl border-2 border-slate-800 hover:border-emerald-400 text-left flex justify-between items-center transition-all";
+                btn.innerHTML = `
+                    <div>
+                        <p class="font-bold text-slate-200 text-sm">${drink.emoji} ${drink.name}</p>
+                        <p class="text-xs ${drink.isHealthy ? 'text-emerald-400' : 'text-red-400'} font-bold">含糖量：${drink.sugar}</p>
+                    </div>
+                    <i data-lucide="circle" class="w-5 h-5 text-slate-600"></i>
+                `;
+                btn.onclick = () => selectU1Drink(idx, btn);
+                optionsContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function selectU1Aux(val) {
+            state.unit1.selectedAux = val;
+            document.querySelectorAll('.u1-aux-btn').forEach(btn => {
+                if (btn.innerText === val) {
+                    btn.className = "u1-aux-btn py-2.5 px-4 rounded-xl border-2 border-emerald-500 bg-emerald-950/40 text-emerald-300 font-bold transition-all text-center";
+                } else {
+                    btn.className = "u1-aux-btn py-2.5 px-4 rounded-xl border-2 border-slate-700 hover:border-emerald-500 hover:bg-slate-850 text-slate-300 font-bold transition-all text-center";
+                }
+            });
+        }
+
+        function selectU1Drink(idx, btnElement) {
+            state.unit1.selectedRecipe = idx;
+            document.querySelectorAll('.u1-drink-btn').forEach(btn => {
+                btn.className = "u1-drink-btn p-3 bg-slate-950/40 rounded-xl border-2 border-slate-800 hover:border-emerald-400 text-left flex justify-between items-center transition-all";
+                btn.querySelector('i').setAttribute('data-lucide', 'circle');
+            });
+
+            btnElement.className = "u1-drink-btn p-3 bg-emerald-950/20 rounded-xl border-2 border-emerald-500 text-left flex justify-between items-center transition-all";
+            btnElement.querySelector('i').setAttribute('data-lucide', 'check-circle-2');
+            lucide.createIcons();
+
+            // 觸發搖杯模擬
+            const liquid = document.getElementById('u1-liquid');
+            liquid.style.height = "75%";
+            if (idx === 0) {
+                liquid.className = "w-full h-[75%] bg-emerald-700/60 transition-all duration-700 relative";
+                document.getElementById('u1-bubbles').classList.add('hidden');
+                document.getElementById('u1-cup-status').innerText = "已倒入：健康無糖茶";
+            } else if (idx === 1) {
+                liquid.className = "w-full h-[75%] bg-yellow-600/60 transition-all duration-700 relative";
+                document.getElementById('u1-bubbles').classList.add('hidden');
+                document.getElementById('u1-cup-status').innerText = "已倒入：檸檬果汁";
+            } else {
+                liquid.className = "w-full h-[75%] bg-amber-850 transition-all duration-700 relative";
+                document.getElementById('u1-bubbles').classList.remove('hidden');
+                document.getElementById('u1-cup-status').innerText = "注意！高糖分飲料";
+            }
+        }
+
+        function verifyU1Recipe() {
+            if (!state.unit1.selectedAux) {
+                showFeedbackModal("未完成！", "請點擊完成步驟 1，選擇詢問時用的助動詞。", "🤨", false);
+                return;
+            }
+            if (state.unit1.selectedRecipe === null) {
+                showFeedbackModal("未完成！", "請為顧客選擇一杯手搖飲配方！", "🤨", false);
+                return;
+            }
+
+            // 驗證
+            const isAuxCorrect = state.unit1.selectedAux === 'Does';
+            const drinkObj = u1DrinkConfigs[state.unit1.selectedRecipe];
+            const isDrinkHealthy = drinkObj.isHealthy;
+
+            if (isAuxCorrect && isDrinkHealthy) {
+                updateScore(20);
+                showFeedbackModal(
+                    "完美的手搖飲師傅！🥤",
+                    `非常好！\n- 主詞是 he/she 時，助動詞要換成 "Does"。\n- 你也成功配合健康教育，選擇了低糖或無糖的飲料，顧客感到十分健康滿意！`,
+                    "🌟",
+                    true,
+                    () => goToHome()
+                );
+            } else if (!isAuxCorrect) {
+                showFeedbackModal(
+                    "語法有盲點喔！",
+                    `請記得：當主詞是單數的 ${state.unit1.subject} 時，前面的助動詞必須是 "Does" 喔！`,
+                    "😢",
+                    false
+                );
+            } else {
+                showFeedbackModal(
+                    "高糖警告！",
+                    `雖然語法對了，但顧客想要健康無負擔的飲料！這杯 ${drinkObj.name} 含糖量太高了，請重新選擇低糖或無糖綠茶吧。`,
+                    "⚠️",
+                    false
+                );
+            }
+        }
+
+        // ==========================================
+        // 關卡 2: Unit 2 水果數量與需求
+        // ==========================================
+        const u2Scenarios = [
+            { subject: "she", verb: "need", fruit: "apples", count: "three", text: "How many apples does she need?", correct: "s" },
+            { subject: "they", verb: "need", fruit: "guavas", count: "five", text: "How many guavas do they need?", correct: "" },
+            { subject: "he", verb: "need", fruit: "pineapples", count: "ten", text: "How many pineapples does he need?", correct: "s" }
+        ];
+        let u2Idx = 0;
+
+        function initUnit2() {
+            u2Idx = 0;
+            loadU2Question();
+        }
+
+        function loadU2Question() {
+            const sc = u2Scenarios[u2Idx];
+            state.unit2.subject = sc.subject;
+            state.unit2.verb = sc.verb;
+            state.unit2.fruit = sc.fruit;
+            state.unit2.count = sc.count;
+            state.unit2.correctSuffix = sc.correct;
+            state.unit2.selectedSuffix = null;
+
+            // 更新 UI
+            document.getElementById('u2-question-text').innerText = sc.text;
+            document.getElementById('u2-subject').innerText = sc.subject.charAt(0).toUpperCase() + sc.subject.slice(1);
+            document.getElementById('u2-number').innerText = sc.count;
+            document.getElementById('u2-fruit-plural').innerText = sc.fruit + ".";
+            document.getElementById('u2-s-slot').innerText = "_";
+
+            if (sc.fruit === 'apples') document.getElementById('u2-fruit-emoji').innerText = "🍎";
+            if (sc.fruit === 'guavas') document.getElementById('u2-fruit-emoji').innerText = "🥑";
+            if (sc.fruit === 'pineapples') document.getElementById('u2-fruit-emoji').innerText = "🍍";
+        }
+
+        function selectU2Suffix(val) {
+            state.unit2.selectedSuffix = val;
+            document.getElementById('u2-s-slot').innerText = val === "" ? " " : val;
+        }
+
+        function verifyU2() {
+            if (state.unit2.selectedSuffix === null) {
+                showFeedbackModal("提示", "請在右邊為 need 選擇正確的動詞變化狀態（s 蛇 or 空罐）", "🧐", false);
+                return;
+            }
+
+            const isCorrect = state.unit2.selectedSuffix === state.unit2.correctSuffix;
+            if (isCorrect) {
+                updateScore(15);
+                const explanation = state.unit2.correctSuffix === 's'
+                    ? `答對了！因為主詞是單數的 ${state.unit2.subject}，所以 need 字尾必須要有「會看人臉色的蛇 s」！🐍`
+                    : `答對了！主詞是 ${state.unit2.subject} (複數)，need 不需要加 s！所以用空罐子完美過關！🫙`;
+
+                showFeedbackModal("回答正確！", explanation, "🎉", true, () => {
+                    u2Idx++;
+                    if (u2Idx < u2Scenarios.length) {
+                        loadU2Question();
+                    } else {
+                        showFeedbackModal("水果挑戰全部過關！", "你已經精通「看臉色的蛇」與複數名詞水果！", "🏆", true, () => {
+                            goToHome();
+                        });
+                    }
+                });
+            } else {
+                const hint = state.unit2.correctSuffix === 's'
+                    ? `注意：主詞是單數的 ${state.unit2.subject}，這是一隻愛看臉色的蛇，快召喚牠黏到 need 字尾去！🐍`
+                    : `注意：主詞是複數的 ${state.unit2.subject}，不需要蛇蛇出沒喔！選空罐子試試看。`;
+                showFeedbackModal("差一點！", hint, "🐍", false);
+            }
+        }
+
+        // ==========================================
+        // 關卡 3: Unit 3 一週的日期
+        // ==========================================
+        const dayOptions = [
+            { abbr: 'SUN', correct: 'Sunday', wrong: 'sunday' },
+            { abbr: 'MON', correct: 'Monday', wrong: 'monday' },
+            { abbr: 'WED', correct: 'Wednesday', wrong: 'wednesday' },
+            { abbr: 'THU', correct: 'Thursday', wrong: 'thursday' },
+            { abbr: 'FRI', correct: 'Friday', wrong: 'friday' },
+            { abbr: 'SAT', correct: 'Saturday', wrong: 'saturday' }
+        ];
+
+        let u3ActiveRound = [];
+        let u3CompletedCount = 0;
+
+        function initUnit3() {
+            u3CompletedCount = 0;
+            state.unit3.selectedAbbr = null;
+            document.getElementById('u3-score-info').innerText = "目前配對：0 / 3";
+            
+            // 隨機抽選 3 個日期
+            u3ActiveRound = shuffleArray([...dayOptions]).slice(0, 3);
+            renderUnit3Board();
+        }
+
+        function renderUnit3Board() {
+            // 左邊縮寫
+            const abbrContainer = document.getElementById('u3-abbr-container');
+            abbrContainer.innerHTML = '';
+            u3ActiveRound.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = `u3-abbr-btn bg-slate-950 border-2 border-purple-900/60 rounded-xl p-4 font-bubble text-lg hover:border-purple-400 transition-all active:scale-95 text-purple-300 shadow-sm ${state.unit3.selectedAbbr === item.abbr ? 'bg-purple-950/45 border-purple-500 ring-2 ring-purple-300' : ''}`;
+                btn.innerText = item.abbr;
+                btn.onclick = () => selectU3Abbr(item.abbr);
+                abbrContainer.appendChild(btn);
+            });
+
+            // 右邊完整（打亂 correct 與 wrong，首字大小寫混在一起）
+            const fullContainer = document.getElementById('u3-full-container');
+            fullContainer.innerHTML = '';
+            
+            // 把這三組的正確與錯誤拿出來混淆
+            let wordPool = [];
+            u3ActiveRound.forEach(item => {
+                wordPool.push({ text: item.correct, isCorrect: true, origin: item.abbr });
+                wordPool.push({ text: item.wrong, isCorrect: false, origin: item.abbr });
+            });
+            wordPool = shuffleArray(wordPool);
+
+            wordPool.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = "bg-slate-950 border border-slate-800 rounded-xl py-3 px-4 text-left font-bold text-slate-200 hover:border-purple-500 hover:bg-purple-950/35 transition-all active:scale-98 flex justify-between items-center";
+                btn.innerHTML = `<span>${item.text}</span><i data-lucide="help-circle" class="w-4 h-4 text-slate-600"></i>`;
+                btn.onclick = () => selectU3Full(item);
+                fullContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function selectU3Abbr(abbr) {
+            state.unit3.selectedAbbr = abbr;
+            renderUnit3Board();
+        }
+
+        function selectU3Full(fullObj) {
+            if (!state.unit3.selectedAbbr) {
+                showFeedbackModal("提示", "請先點擊左邊的「縮寫看板」（例如 SUN）喔！", "🧐", false);
+                return;
+            }
+
+            // 配對判斷
+            if (fullObj.origin === state.unit3.selectedAbbr) {
+                if (fullObj.isCorrect) {
+                    updateScore(15);
+                    u3CompletedCount++;
+                    document.getElementById('u3-score-info').innerText = `目前配對：${u3CompletedCount} / 3`;
+
+                    // 移除此組
+                    u3ActiveRound = u3ActiveRound.filter(item => item.abbr !== state.unit3.selectedAbbr);
+                    state.unit3.selectedAbbr = null;
+
+                    playSound('correct');
+
+                    if (u3CompletedCount >= 3) {
+                        showFeedbackModal("配對大成功！", "完美！你認得所有日期的完整單字，而且徹底克服了「首字母必須大寫」的陷阱！", "🏆", true, () => {
+                            goToHome();
+                        });
+                    } else {
+                        renderUnit3Board();
+                    }
+                } else {
+                    // 點到小寫了
+                    showFeedbackModal("危機警告！", `注意到了嗎？ "${fullObj.text}" 的首字母是小寫！在英文中，一週日期的首字母必須是「大寫」喔！`, "⚠️", false);
+                }
+            } else {
+                showFeedbackModal("不合適的配對", "這個單字與你選擇的縮寫對不上喔，再仔細看看！", "🧐", false);
+            }
+        }
+
+        // ==========================================
+        // 關卡 4: Unit 4 最喜歡的科目
+        // ==========================================
+        const u4Puzzles = [
+            {
+                wrong: "I favorite subject is pe.",
+                correct: "My favorite subject is PE.",
+                hint: "「我最喜歡的科目是體育。」",
+                pool: ["My", "I", "favorite", "subject", "is", "pe", "PE.", "PE", "me"]
+            },
+            {
+                wrong: "He favorite subject is english.",
+                correct: "His favorite subject is English.",
+                hint: "「他最喜歡的科目是英文。」",
+                pool: ["His", "He", "favorite", "subject", "is", "english", "English.", "English", "him"]
+            }
+        ];
+        let u4Idx = 0;
+
+        function initUnit4() {
+            u4Idx = 0;
+            loadU4Question();
+        }
+
+        function loadU4Question() {
+            const pz = u4Puzzles[u4Idx];
+            state.unit4.correctWords = pz.correct.split(' ');
+            state.unit4.wordsPool = shuffleArray([...pz.pool]);
+            state.unit4.slots = [];
+
+            document.getElementById('u4-context-hint').innerText = pz.hint;
+            document.getElementById('u4-wrong-sentence').innerText = pz.wrong;
+
+            renderU4Board();
+        }
+
+        function renderU4Board() {
+            // 渲染插槽 (已填單字)
+            const slotsContainer = document.getElementById('u4-slots-container');
+            slotsContainer.innerHTML = '';
+            if (state.unit4.slots.length === 0) {
+                slotsContainer.innerHTML = `<span class="text-slate-500 text-sm italic font-semibold">尚未選擇任何單字...</span>`;
+            } else {
+                state.unit4.slots.forEach((word, idx) => {
+                    const span = document.createElement('span');
+                    span.className = "bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-500/30 text-emerald-300 px-3 py-1 rounded-lg font-bubble text-base cursor-pointer shadow-sm transition";
+                    span.innerText = word;
+                    span.onclick = () => removeU4Slot(idx);
+                    slotsContainer.appendChild(span);
+                });
+            }
+
+            // 渲染單字工具箱
+            const bankContainer = document.getElementById('u4-wordbank');
+            bankContainer.innerHTML = '';
+            state.unit4.wordsPool.forEach(word => {
+                const btn = document.createElement('button');
+                btn.className = "bg-slate-950 hover:bg-slate-800 border-2 border-slate-800 hover:border-pink-500/50 font-bubble text-base text-slate-200 px-3.5 py-1.5 rounded-xl shadow-sm transition active:scale-95";
+                btn.innerText = word;
+                btn.onclick = () => addU4Slot(word);
+                bankContainer.appendChild(btn);
+            });
+        }
+
+        function addU4Slot(word) {
+            state.unit4.slots.push(word);
+            renderU4Board();
+        }
+
+        function removeU4Slot(idx) {
+            state.unit4.slots.splice(idx, 1);
+            renderU4Board();
+        }
+
+        function clearU4Slots() {
+            state.unit4.slots = [];
+            renderU4Board();
+        }
+
+        function verifyU4Sentence() {
+            const userSentence = state.unit4.slots.join(' ');
+            const targetSentence = state.unit4.correctWords.join(' ');
+
+            if (userSentence === targetSentence) {
+                updateScore(20);
+                showFeedbackModal(
+                    "拼圖正確！🧩",
+                    `超強！你成功做到了：\n- 區分代名詞與所有格 (My / His)。\n- 科目首字母大寫與專有名詞縮寫 (PE / English)。`,
+                    "🎉",
+                    true,
+                    () => {
+                        u4Idx++;
+                        if (u4Idx < u4Puzzles.length) {
+                            loadU4Question();
+                        } else {
+                            showFeedbackModal("科目大挑戰完美通關！", "你已經掌握所有格與學科名稱的寫法規則了！", "🏆", true, () => {
+                                goToHome();
+                            });
+                        }
+                    }
+                );
+            } else {
+                let errorHint = "句子還有點問題喔。請檢查是否有以下錯誤：\n1. 所有格（我的/他的）開頭要大寫。\n2. 學科首字大寫（PE, English）。\n3. 句子的句點別忘了。";
+                showFeedbackModal("重組有錯誤！", errorHint, "🧐", false);
+            }
+        }
+
+        // ==========================================
+        // 關卡 5: 新年文化與 Phonics 語音總複習
+        // ==========================================
+        function initSpecial() {
+            switchSpecialTab('culture');
+        }
+
+        function switchSpecialTab(tabId) {
+            state.special.tab = tabId;
+            const btnCulture = document.getElementById('tab-btn-culture');
+            const btnPhonics = document.getElementById('tab-btn-phonics');
+            const contentCulture = document.getElementById('tab-content-culture');
+            const contentPhonics = document.getElementById('tab-content-phonics');
+
+            if (tabId === 'culture') {
+                btnCulture.className = "flex-1 py-2.5 font-bold text-center border-b-2 border-red-500 text-red-400";
+                btnPhonics.className = "flex-1 py-2.5 font-bold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+                contentCulture.classList.remove('hidden');
+                contentPhonics.classList.add('hidden');
+                initCultureGame();
+            } else {
+                btnCulture.className = "flex-1 py-2.5 font-bold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+                btnPhonics.className = "flex-1 py-2.5 font-bold text-center border-b-2 border-orange-500 text-orange-400";
+                contentCulture.classList.add('hidden');
+                contentPhonics.classList.remove('hidden');
+                initPhonicsTrain();
+            }
+        }
+
+        // --- 新年翻牌配對邏輯 ---
+        let cultureDeck = [];
+        let selectedCards = [];
+
+        function initCultureGame() {
+            selectedCards = [];
+            cultureDeck = [];
+            
+            // 構建配對牌組：4個英文，4個中文含義
+            state.special.culturePairs.forEach((pair, idx) => {
+                cultureDeck.push({ id: idx, type: 'en', text: pair.key, matched: false });
+                cultureDeck.push({ id: idx, type: 'zh', text: pair.val, matched: false });
+            });
+
+            cultureDeck = shuffleArray(cultureDeck);
+            renderCultureGrid();
+        }
+
+        function renderCultureGrid() {
+            const grid = document.getElementById('culture-cards-grid');
+            grid.innerHTML = '';
+
+            cultureDeck.forEach((card, index) => {
+                const button = document.createElement('button');
+                const isSelected = selectedCards.includes(index);
+                
+                if (card.matched) {
+                    // 已配對成功
+                    button.className = "bg-red-950/40 text-red-300 border-2 border-red-500/40 rounded-2xl py-6 font-bold text-sm shadow-inner cursor-default flex flex-col justify-center items-center gap-2";
+                    button.innerHTML = `<span>✨ Match!</span><span class="text-xs text-red-400">${card.text}</span>`;
+                } else if (isSelected) {
+                    // 翻開狀態
+                    button.className = "bg-slate-900 text-red-400 border-4 border-red-500 rounded-2xl py-6 font-bubble text-sm shadow-md flex justify-center items-center";
+                    button.innerText = card.text;
+                } else {
+                    // 背面朝上 (祈福燈籠裝飾)
+                    button.className = "bg-red-900 hover:bg-red-850 text-yellow-300 border-2 border-yellow-500/40 rounded-2xl py-6 font-bubble text-base shadow-md flex flex-col justify-center items-center transition transform active:scale-95";
+                    button.innerHTML = `<span class="text-2xl animate-pulse">🏮</span><span class="text-xs font-semibold tracking-wider">點我祈福</span>`;
+                    button.onclick = () => clickCultureCard(index);
+                }
+                
+                grid.appendChild(button);
+            });
+        }
+
+        function clickCultureCard(index) {
+            if (selectedCards.length >= 2 || selectedCards.includes(index)) return;
+
+            selectedCards.push(index);
+            renderCultureGrid();
+
+            if (selectedCards.length === 2) {
+                const c1 = cultureDeck[selectedCards[0]];
+                const c2 = cultureDeck[selectedCards[1]];
+
+                if (c1.id === c2.id && c1.type !== c2.type) {
+                    // 成功配對
+                    setTimeout(() => {
+                        c1.matched = true;
+                        c2.matched = true;
+                        selectedCards = [];
+                        updateScore(15);
+                        playSound('correct');
+                        renderCultureGrid();
+
+                        // 檢查是否全部完成
+                        if (cultureDeck.every(c => c.matched)) {
+                            showFeedbackModal("春節闔家團圓！🍊", "恭喜你！將春聯、紅包與年糕及其吉祥含意全部完美配對！年年有餘大吉大利！", "🧧", true);
+                        }
+                    }, 500);
+                } else {
+                    // 失敗，翻回去
+                    setTimeout(() => {
+                        selectedCards = [];
+                        playSound('wrong');
+                        renderCultureGrid();
+                    }, 1000);
+                }
+            }
+        }
+
+        // --- Phonics 語音分類火車邏輯 ---
+        let trainPool = [];
+        let trainCarriages = {
+            a: [], e: [], i: [], o: [], u: []
+        };
+        let activeSelectWord = null;
+
+        function initPhonicsTrain() {
+            activeSelectWord = null;
+            // 複製單字庫並打亂
+            trainPool = shuffleArray([...state.special.phonicsPool]).map((item, idx) => ({ ...item, id: idx }));
+            trainCarriages = { a: [], e: [], i: [], o: [], u: [] };
+            renderPhonicsTrain();
+        }
+
+        function renderPhonicsTrain() {
+            // 渲染字牌池
+            const poolContainer = document.getElementById('phonics-words-pool');
+            poolContainer.innerHTML = '';
+            
+            if (trainPool.length === 0) {
+                poolContainer.innerHTML = `<p class="text-sm text-slate-400 font-bold italic">所有單字皆已上車囉！點擊下方按鈕驗證！</p>`;
+            } else {
+                trainPool.forEach(item => {
+                    const button = document.createElement('button');
+                    const isActive = activeSelectWord && activeSelectWord.id === item.id;
+                    button.className = `px-4 py-2 rounded-xl border-2 font-bubble text-base shadow-sm transition active:scale-95 ${isActive ? 'bg-orange-500 text-slate-950 border-orange-600 scale-105' : 'bg-slate-950 hover:bg-orange-950/20 border-slate-800 text-slate-300'}`;
+                    button.innerText = item.word;
+                    button.onclick = (e) => {
+                        e.stopPropagation();
+                        selectPhonicsWord(item);
+                    };
+                    poolContainer.appendChild(button);
+                });
+            }
+
+            // 渲染 5 節車廂裡的乘客
+            ['a', 'e', 'i', 'o', 'u'].forEach(type => {
+                const carriage = document.getElementById(`carriage-${type}`);
+                carriage.innerHTML = '';
+                if (trainCarriages[type].length === 0) {
+                    carriage.innerHTML = `<span class="text-xs text-slate-500 italic">車廂空置中 (點此加入選定字)</span>`;
+                } else {
+                    trainCarriages[type].forEach((item, idx) => {
+                        const span = document.createElement('span');
+                        span.className = "bg-slate-950 border border-slate-800 text-slate-200 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 cursor-pointer";
+                        span.innerHTML = `<span>${item.word}</span><i data-lucide="x" class="w-3 h-3 text-red-400"></i>`;
+                        span.onclick = (e) => {
+                            e.stopPropagation();
+                            removeWordFromCarriage(type, idx);
+                        };
+                        carriage.appendChild(span);
+                    });
+                }
+            });
+            lucide.createIcons();
+        }
+
+        function selectPhonicsWord(item) {
+            activeSelectWord = item;
+            renderPhonicsTrain();
+            // 自動發音
+            playSpeech(item.word);
+        }
+
+        function dropToCarriage(type) {
+            if (!activeSelectWord) {
+                showFeedbackModal("提示", "請先點擊上方「待分類單字」池中的單字，再選擇要放入的車廂！", "🧐", false);
+                return;
+            }
+
+            trainCarriages[type].push(activeSelectWord);
+            trainPool = trainPool.filter(w => w.id !== activeSelectWord.id);
+            activeSelectWord = null;
+            renderPhonicsTrain();
+        }
+
+        function removeWordFromCarriage(type, idx) {
+            const word = trainCarriages[type][idx];
+            trainCarriages[type].splice(idx, 1);
+            trainPool.push(word);
+            renderPhonicsTrain();
+        }
+
+        function resetPhonicsTrain() {
+            initPhonicsTrain();
+        }
+
+        function verifyPhonicsTrain() {
+            if (trainPool.length > 0) {
+                showFeedbackModal("貨物尚未裝載完畢", "請將所有的單字都裝入相應的母音車廂後再進行檢查！", "🧐", false);
+                return;
+            }
+
+            // 驗證是否分類正確
+            let errors = 0;
+            Object.keys(trainCarriages).forEach(type => {
+                trainCarriages[type].forEach(item => {
+                    if (item.type !== type) errors++;
+                });
+            });
+
+            if (errors === 0) {
+                updateScore(30);
+                showFeedbackModal("全能發音大師！🚂", "太完美了！你把所有長母音 [a, e, i, o, u] 規則全部精準歸類，小火車順利出發！", "🏆", true, () => {
+                    goToHome();
+                });
+            } else {
+                showFeedbackModal("車廂貨物錯了喔！", `有 ${errors} 個單字搭錯了車。請仔細聽聽單字的發音，點擊車廂內帶 X 的字就能將牠送回待分類區。`, "😢", false);
+            }
+        }
+
+
+        // ==========================================
+        // 實用工具函數
+        // ==========================================
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+    </script>
+</body>
+</html>
